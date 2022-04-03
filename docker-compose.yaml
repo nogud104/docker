@@ -5,10 +5,10 @@ services:
     container_name: database
     restart: always
     environment:
-      - POSTGRES_DATABASE="${DB_DATABASE}"
-      - POSTGRES_USER="${DB_USER}"
-      - POSTGRES_PASSWORD="${DB_PASSWORD}"
-      - POSTGRES_ROOT_PASSWORD="${DB_ROOT_PASSWORD}"
+      POSTGRES_DATABASE: "${DB_DATABASE}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
     volumes:
       - .dbdata:/var/lib/postgresql
     ports:
@@ -23,6 +23,8 @@ services:
       dockerfile: ./frontend/Dockerfile
     image: node:12-alpine
     container_name: nodejs
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "3000:3000"
     depends_on:
@@ -38,8 +40,6 @@ services:
       dockerfile: ./lib_catalog/Dockerfile
     image: python:3.7-alpine
     container_name: django
-    command: >
-      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     depends_on:
