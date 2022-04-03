@@ -5,10 +5,10 @@ services:
     container_name: database
     restart: always
     environment:
-      POSTGRES_DATABASE: "${DB_DATABASE}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-      POSTGRES_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      -  POSTGRES_DATABASE="${DB_DATABASE}"
+      -  POSTGRES_USER="${DB_USER}"
+      -  POSTGRES_PASSWORD="${DB_PASSWORD}"
+      -  POSTGRES_ROOT_PASSWORD="${DB_ROOT_PASSWORD}"
     volumes:
       - .dbdata:/var/lib/postgresql
     ports:
