@@ -19,7 +19,8 @@ RUN npm install --loglevel warn && npm run build
 FROM base AS production
 WORKDIR /home/node/app
 USER node
-COPY --chown=node:node --from=builder-server /home/node/app/ .
+COPY --chown=node:node --from=builder-server ./home/node/app/ ./home/node/app
+
 EXPOSE 3000
 
 CMD ["npm", "start"]
