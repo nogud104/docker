@@ -1,19 +1,39 @@
+FROM python:3.7-alpine as base
+ENV PYTHONDONTWRITEBYTECODE 1
 
-# docker pull postgres
-# docker network create --driver bridge --subnet 172.19.0.0/16 --ip-range 172.19.0.0/16 task-bridge-network
-# docker run --name database -p 5432:5432 -e POSTGRES_USER=django -e POSTGRES_PASSWORD=django -e POSTGRES_DB=django -d postgres 
-# docker network connect --link postgres task-bridge-network database
-# docker network connect --link django task-bridge-network django
-# docker exec django python manage.py migrate --noinput
+COPY ./lib_catalog/requirements.txt /code/
+RUN apk add --update --no-cache --virtual .build-deps \
+    build-base \
+    postgresql-dev \
+    libffi-dev \
+    python3-dev \
+    libffi-dev \
+    jpeg-dev \
+    zlib-dev \
+    musl-dev \
+    libpq \
+    libxml2-dev \
+    libxslt-dev 
 
-FROM python:3
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-WORKDIR /code
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r /code/requirements.txt 
 COPY . /code/
 
+
+FROM python:3.7-alpine
+
+RUN apk add --update --no-cache libpq libjpeg-turbo
+
+COPY --from=base /usr/local/lib/python3.7/site-packages/ /usr/local/lib/python3.7/site-packages/
+COPY --from=base /usr/local/bin/ /usr/local/bin/
+
+WORKDIR /code
+
+COPY ./lib_catalog/ /code/
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH /code:$PYTHONPATH
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
+
