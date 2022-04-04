@@ -13,7 +13,7 @@ RUN apk add --update --no-cache --virtual .build-deps \
     musl-dev \
     libpq \
     libxml2-dev \
-    libxslt-dev 
+    libxslt-dev
 
 RUN pip install --no-cache-dir -r /code/requirements.txt 
 COPY . /code/
@@ -25,17 +25,17 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH /code:$PYTHONPATH
 
-RUN apk add --update --no-cache libpq libjpeg-turbo
+WORKDIR /code
 
 COPY --from=base /usr/local/lib/python3.7/site-packages/ /usr/local/lib/python3.7/site-packages/
 COPY --from=base /usr/local/bin/ /usr/local/bin/
 COPY ./lib_catalog/ /code/
 
-WORKDIR /code
-
+RUN chmod +x /code/entrypoint.sh
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /code
+
 USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "lib_catalog.wsgi"]
+ENTRYPOINT [ "/code/entrypoint.sh" ]
