@@ -1,7 +1,7 @@
 FROM python:3.7-alpine as base
-ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONDONTWRITEBYTEapp 1
 
-COPY ./lib_catalog/requirements.txt /code/
+COPY ./lib_catalog/requirements.txt /app/
 RUN apk add --update --no-cache --virtual .build-deps \
     build-base \
     postgresql-dev \
@@ -13,26 +13,29 @@ RUN apk add --update --no-cache --virtual .build-deps \
     musl-dev \
     libpq \
     libxml2-dev \
-    libxslt-dev 
+    libxslt-dev \
+    libjpeg-turbo
 
-RUN pip install --no-cache-dir -r /code/requirements.txt 
-COPY . /code/
+RUN python -m pip install --no-cache-dir -r /app/requirements.txt
 
 
 FROM python:3.7-alpine
 
-RUN apk add --update --no-cache libpq libjpeg-turbo
+ENV PYTHONDONTWRITEBYTEapp=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH /app:$PYTHONPATH
+
+WORKDIR /app
 
 COPY --from=base /usr/local/lib/python3.7/site-packages/ /usr/local/lib/python3.7/site-packages/
 COPY --from=base /usr/local/bin/ /usr/local/bin/
+COPY ./lib_catalog/ /app/
 
-WORKDIR /code
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+USER appuser
 
-COPY ./lib_catalog/ /code/
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH /code:$PYTHONPATH
 EXPOSE 8000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "lib_catalog.wsgi"]
 
 

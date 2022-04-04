@@ -1,25 +1,27 @@
 # build environment
 FROM node:12-alpine AS base
-RUN mkdir -p /home/node/app
+RUN mkdir -p /usr/src/app
 RUN chown -R node:node /home/node && chmod -R 770 /home/node
-WORKDIR /home/node/app
+WORKDIR /usr/src/app
 
 FROM base AS builder-server
-WORKDIR /home/node/app
+WORKDIR /usr/src/app
 RUN apk add --no-cache --virtual .build-deps \
     git \
     g++ \
     make
 
-COPY --chown=node:node ./frontend .
+COPY ["frontend/package-lock.json", "frontend/package-lock.json*", "frontend/npm-shrinkwrap.json*", "./"]
+RUN chown -R node /usr/src/app
 USER node
 
-RUN npm install --loglevel warn && npm run build
+RUN npm install --production --silent && mv node_modules ../
 
 FROM base AS production
-WORKDIR /home/node/app
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
 USER node
-COPY --chown=node:node --from=builder-server ./home/node/app/ ./home/node/app
+COPY --chown=node:node --from=builder-server ./usr/src/app/ ./usr/src/app
 
 EXPOSE 3000
 

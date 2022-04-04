@@ -159,5 +159,6 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 .vs/
+.vscode/
 #Nuget packages folder
 packages/
