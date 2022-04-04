@@ -8,10 +8,6 @@ services:
     container_name: django
     env_file:
       - env.app
-    # environment:
-    #   - DB_NAME=${DB_NAME}
-    #   - DB_USER=${DB_USER}
-    #   - DB_PASS=${DB_PASSWORD}
     command: "python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
@@ -28,11 +24,6 @@ services:
     restart: always
     env_file:
       - env.database
-    # environment:
-    #   - POSTGRES_DATABASE=${DB_DATABASE}
-    #   - POSTGRES_USER=${DB_USER}
-    #   - POSTGRES_PASSWORD=${DB_PASSWORD}
-    #   - POSTGRES_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     volumes:
       - .dbdata:/var/lib/postgresql
     ports:
@@ -42,10 +33,10 @@ services:
         ipv4_address: 172.16.16.3
   web:
     build:
-      context: .
+      context: ./frontend
+      # target: builder-server
       target: production
-      dockerfile: ./frontend/Dockerfile
-    image: node:12-alpine
+    image: node:12-alpine3.14
     container_name: nodejs
     ports:
       - "3000:3000"
