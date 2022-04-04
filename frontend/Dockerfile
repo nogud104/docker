@@ -11,7 +11,7 @@ RUN apk add --no-cache --virtual .build-deps \
     g++ \
     make
 
-COPY ["frontend/package-lock.json", "frontend/package-lock.json*", "frontend/npm-shrinkwrap.json*", "./"]
+COPY ["frontend/package-lock.json", "frontend/package-lock.json*", "./"]
 RUN chown -R node /usr/src/app
 USER node
 
