@@ -1,5 +1,5 @@
 import axios from 'axios'
-const API_URL = 'http://nodejs.docker_app-network:8000/api/v1/lib/author/';
+const API_URL = 'http://django.docker_app-network:8000/api/v1/lib/author/';
 
 export default class AuthorManager {
 
