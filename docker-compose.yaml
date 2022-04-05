@@ -5,16 +5,10 @@ services:
       context: .
       dockerfile: ./lib_catalog/Dockerfile
     image: python:3.7-alpine
-    container_name: django
+    container_name: django-py3.7
+    hostname: django
     env_file:
       - ./env.app
-    # environment:
-    #   # - DB_USER=django
-    #   # - DB_NAME=django
-    #   # - DB_PASS=django
-    #     DB_USER: ${DB_USER}
-    #     DB_NAME: ${DB_NAME}
-    #     DB_PASS: ${DB_PASS}
     command: "python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
@@ -27,7 +21,8 @@ services:
         ipv4_address: "172.16.16.2"
   db:
     image: postgres:14.2-alpine
-    container_name: database
+    container_name: database-postgres
+    hostname: postgres
     restart: always
     env_file:
       - ./env.database
@@ -43,8 +38,9 @@ services:
       context: ./frontend
       # target: builder-server
       target: production
-    image: node:12-alpine3.14
-    container_name: nodejs
+    image: node:lts-alpine
+    container_name: nodejs-12
+    hostname: nodejs
     ports:
       - "3000:3000"
     depends_on:
