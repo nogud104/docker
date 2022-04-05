@@ -1,5 +1,5 @@
 import axios from 'axios'
-const API_URL = 'http://nodejs:8000/api/v1/lib/publishing_house/';
+const API_URL = 'http://nodejs.docker_app-network:8000/api/v1/lib/publishing_house/';
 
 export default class PubManager {
 

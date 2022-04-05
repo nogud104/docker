@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://nodejs:8000/api/v1/lib/issue_city/';
+const API_URL = 'http://nodejs.docker_app-network:8000/api/v1/lib/issue_city/';
 
 export default class CityManager {
 
